@@ -1,17 +1,17 @@
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from aiogram import types
+from aiogram import types, Dispatcher
 from config import bot, dp, ADMIN
 
-@dp.message_handler(commands=['mem'])
-async def problem_1(message: types.Message):
+# @dp.message_handler(commands=['mem'])
+async def mem(message: types.Message):
     photo = open('photo_2022-04-09_15-00-02.jpg', 'rb')
     bot.send_photo(message.chat.id, photo=photo)
 
-@dp.message_handler(commands=['start'])
+# @dp.message_handler(commands=['start'])
 async def hello(message: types.Message):
     await bot.send_message(message.chat.id, f"Салам хозяин {message.from_user.full_name}")
 
-@dp.message_handler(commands=['quiz'])
+# @dp.message_handler(commands=['quiz'])
 async def quiz_1(message: types.Message):
     question = "Какого типа данных не существует в Python?"
     answers = ['int', 'str', 'elif', 'tuple']
@@ -23,7 +23,7 @@ async def quiz_1(message: types.Message):
                         correct_option_id=2
                         )
 
-@dp.message_handler(commands=['problem'])
+# @dp.message_handler(commands=['problem'])
 async def problem_1(message: types.Message):
     murkup = InlineKeyboardMarkup()
     button_call_1 = InlineKeyboardButton(
@@ -47,9 +47,7 @@ async def problem_1(message: types.Message):
                         reply_markup=murkup
                         )
 
-
-
-@dp.message_handler(commands=["ban"], commands_prefix="!/")
+# @dp.message_handler(commands=["ban"], commands_prefix="!/")
 async def ban(message: types.Message):
     if message.chat.type != "private":
         if message.from_user.id != ADMIN:
@@ -69,3 +67,11 @@ async def ban(message: types.Message):
     else:
         await message.answer("Это работает только в группах!")
 
+
+
+def register_hendlers_client(dp: Dispatcher):
+    dp.register_message_handler(mem, commands=["mem"])
+    dp.register_message_handler(hello, commands=["start"])
+    dp.register_message_handler(quiz_1, commands=["quiz"])
+    dp.register_message_handler(problem_1, commands=["problem"])
+    dp.register_message_handler(ban, commands=["ban"], commands_prefix="!/")

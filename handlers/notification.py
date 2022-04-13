@@ -1,8 +1,8 @@
-from aiogram import types
+from aiogram import types, Dispatcher
 from config import bot, dp
 
 
-@dp.message_handler(content_types=["text"])
+# @dp.message_handler()
 async def echo_message(message: types.Message):
 
     # Check bad words
@@ -20,5 +20,8 @@ async def echo_message(message: types.Message):
         await bot.send_dice(message.chat.id, emoji="🎯")
 
     # pin message
-    if message.text.startswith('pin'):
-        await bot.pin_chat_message(message.chat.id, message.message_id)
+    # if message.text.startswith('pin'):
+    #     await bot.send_sticker(message.chat.id, message.message_id)
+
+def register_hendlers_notification(dp: Dispatcher):
+    dp.register_message_handler(echo_message)
