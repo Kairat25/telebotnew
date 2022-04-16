@@ -2,8 +2,9 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
-
+from keyboards import cancel_markup
 from config import bot
+from database import bot_db
 
 # states
 class FSMAdmin(StatesGroup):
@@ -17,11 +18,13 @@ class FSMAdmin(StatesGroup):
 async def fsm_start(message: types.Message):
     await FSMAdmin.photo.set()
     await bot.send_message(message.chat.id,
-                           f"Привет {message.from_user.full_name}, скинь фотку...")
-
+                           f"Привет {message.from_user.full_name}, скинь фотку...",
+                            reply_markup=cancel_markup)
 # load photo
 async def load_photo(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
+        data['id'] = message.from_user.id
+        data['nickname'] = f"@{message.from_user.username}"
         data['photo'] = message.photo[0].file_id
     await FSMAdmin.next()
     await bot.send_message(message.chat.id, "Как зовут?")
@@ -32,7 +35,6 @@ async def load_name(message: types.Message, state: FSMContext):
         data['name'] = message.text
     await FSMAdmin.next()
     await bot.send_message(message.chat.id, "Какая фамилия?")
-
 #load surname
 async def load_surname(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
@@ -54,9 +56,11 @@ async def load_age(message: types.Message, state: FSMContext):
 async def load_region(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['region'] = message.text
-    async with state.proxy() as data:
-        await bot.send_message(message.chat.id, str(data))
+    # async with state.proxy() as data:
+    #     await bot.send_message(message.chat.id, str(data))
+    await bot_db.sql_command_insert(state)
     await state.finish()
+    # await state.finish()
     await bot.send_message(message.chat.id, "Все свободен)")
 
 async def cancal_reg(message: types.Message, state: FSMContext):

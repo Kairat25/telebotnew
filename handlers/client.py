@@ -32,7 +32,7 @@ async def problem_1(message: types.Message):
     )
     murkup.add(button_call_1)
 
-    photo = open("media/problem1.jpg", "rb")
+    photo = open("media/img.png", "rb")
     await bot.send_photo(message.chat.id, photo=photo)
 
     question = "Output:"
@@ -67,6 +67,9 @@ async def ban(message: types.Message):
     else:
         await message.answer("Это работает только в группах!")
 
+
+async def show_random_user (message: types.Message):
+    await bot_db.sql_command_random(message)
 
 
 def register_hendlers_client(dp: Dispatcher):
